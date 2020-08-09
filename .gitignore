@@ -1,0 +1,6 @@
+# code editor conf
+.idea/
+.code/
+
+# Executive file
+*.exe
