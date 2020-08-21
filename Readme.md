@@ -29,6 +29,7 @@ Download installer from https://golang.org/
 #### Install dependant library
 ```
 https://github.com/julienschmidt/httprouter
+https://firebase.google.com/go
 ```
 
 ## Contributing
@@ -38,6 +39,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 ## Authors
 
 * **Jeongin Lee** - *Backend Developer* - [jil8885](https://github.com/jil8885)
+* **Seonyun Jang** - *Backend Developer* - [logpacket](https://github.com/logpakcet)
 
 See also the list of [contributors](https://github.com/Jaram/go_jaram_together_backend/contributors) who participated in this project.
 
