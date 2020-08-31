@@ -2,70 +2,72 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gin-gonic/gin"
 )
 
-var app *firebase.App
-var err error
+var (
+	app *firebase.App
+	err error
+	ctx context.Context
+)
 
-//Index Function for each address
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprint(w, "Welcome, it's home page")
+func firebaseApp() {
+	app, err = firebase.NewApp(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+	}
 }
 
-//SendMsg Function for send message
-func SendMsg(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func msgRequest(c *gin.Context) {
 	ctx := context.Background()
 	client, err := app.Messaging(ctx)
 	if err != nil {
 		log.Fatalf("error getting Messaging client: %v\n", err)
 	}
 
-	// This registration token comes from the client FCM SDKs.
-	topic := "LOL"
-	// See documentation on defining a message payload.
+	msgType := c.PostForm("msgType")
+	podName := c.PostForm("podName")
+
+	title := ""
+	body := ""
+
+	if msgType == "newPod" {
+		title = "새로운 팟이 생성되었습니다!"
+		body = podName + "팟에 참가해 보시는건 어떠신가요?"
+	} else if msgType == "completePod" {
+		title = podName + "팟이 결성되었습니다!"
+		body = podName + "팟은 아쉽지만 다음에 노립시다"
+	}
 	message := &messaging.Message{
 		Data: map[string]string{
 			"click_action": "FLUTTER_NOTIFICATION_CLICK",
 		},
 		Notification: &messaging.Notification{
-			"Title",
-			"test",
-			"",
+			Title:    title,
+			Body:     body,
+			ImageURL: "",
 		},
-		Topic: topic,
+		Topic: podName,
 	}
-
-	// Send a message to the device corresponding to the provided
-	// registration token.
 	response, err := client.Send(ctx, message)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	// Response is a message ID string.
-	fmt.Fprintf(w, "Successfully sent message:", response)
+	c.String(200, "Successfully sent message:", response)
 }
 
 // Main Function
 func main() {
+	firebaseApp()
+	r := gin.Default()
+	r.Use(gin.Logger())
+	r.POST("/msgRequest", msgRequest)
 
-	app, err = firebase.NewApp(context.Background(), nil)
-	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
-	}
-
-	// Declare router variable
-	router := httprouter.New()
-
-	// Connect each function to each address
-	router.GET("/", Index)
-	router.GET("/msg", SendMsg)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
