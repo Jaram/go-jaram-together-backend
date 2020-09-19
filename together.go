@@ -1,9 +1,8 @@
-package main
+package together
 
 import (
 	"context"
 	"log"
-	"net/http"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
@@ -37,7 +36,7 @@ func deletePod(group string, podName string, uid string) bool {
 	return false
 }
 
-func msgRequest(c *gin.Context) {
+func MsgRequest(c *gin.Context) {
 	ctx := context.Background()
 	client, err := app.Messaging(ctx)
 	if err != nil {
@@ -101,12 +100,3 @@ func msgRequest(c *gin.Context) {
 	c.String(200, "Successfully sent message:", response)
 }
 
-// Main Function
-func main() {
-	firebaseApp()
-	r := gin.Default()
-	r.Use(gin.Logger())
-	r.POST("/msgRequest", msgRequest)
-
-	log.Fatal(http.ListenAndServe(":8080", r))
-}
