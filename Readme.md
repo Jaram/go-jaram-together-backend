@@ -28,7 +28,9 @@ Download installer from https://golang.org/
 #### Set GoPATH to your system
 #### Install dependant library
 ```
-https://github.com/julienschmidt/httprouter
+https://firebase.google.com/go/messaging
+https://github.com/gin-gonic/gin
+https://firebase.google.com/go
 ```
 
 ## Contributing
